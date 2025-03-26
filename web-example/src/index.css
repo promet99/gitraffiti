@@ -2,3 +2,47 @@
 @plugin "daisyui" {
   themes: black --default;
 }
+
+:root {
+  /* From github contribution graph */
+  --contribution-default-bgColor-0: #151b23;
+  --contribution-default-bgColor-1: #033a16;
+  --contribution-default-bgColor-2: #196c2e;
+  --contribution-default-bgColor-3: #2ea043;
+  --contribution-default-bgColor-4: #56d364;
+  --contribution-default-borderColor-0: #ffffff0d;
+  --contribution-default-borderColor-1: #ffffff0d;
+  --contribution-default-borderColor-2: #ffffff0d;
+  --contribution-default-borderColor-3: #ffffff0d;
+  --contribution-default-borderColor-4: #ffffff0d;
+}
+
+.ct-0 {   
+  fill: var(--contribution-default-bgColor-0);
+  background-color: var(--contribution-default-bgColor-0);
+  border-color: var(--contribution-default-borderColor-0);
+}
+
+.ct-1 {
+  fill: var(--contribution-default-bgColor-1);
+  background-color: var(--contribution-default-bgColor-1);
+  border-color: var(--contribution-default-borderColor-1);
+}
+
+.ct-2 {
+  fill: var(--contribution-default-bgColor-2);
+  background-color: var(--contribution-default-bgColor-2);
+  border-color: var(--contribution-default-borderColor-2);
+}
+
+.ct-3 {
+  fill: var(--contribution-default-bgColor-3);
+  background-color: var(--contribution-default-bgColor-3);
+  border-color: var(--contribution-default-borderColor-3);
+}
+
+.ct-4 {
+  fill: var(--contribution-default-bgColor-4);
+  background-color: var(--contribution-default-bgColor-4);
+  border-color: var(--contribution-default-borderColor-4);
+}
