@@ -1,19 +1,28 @@
 import { useState } from "react";
-import { commit, downloadFile, initRepo, makeZip } from "./util";
+import { downloadZip, initRepo, pushRepo } from "./util";
 import { GhButton } from "./components/ghbutton";
+import { commitFromYearArray, makeYearArray } from "./date";
+
+const ghToken = "";
+const repoUrl = "";
+const email = "";
 
 function App() {
   const onClick = async () => {
     const fs = await initRepo();
-    await commit(fs, {
-      name: "testing",
-      email: "testing@example.com", // add github noreply email here
-      message: "testing",
-      timestamp: Date.now(),
+
+    const yearArray = makeYearArray(2014);
+    // TODO: add values to yearArray
+
+    await commitFromYearArray(fs, yearArray, {
+      name: "gitraffiti",
+      email: email,
+      message: "gitraffiti",
     });
 
-    const content = await makeZip(fs, "/");
-    downloadFile(content, "repository.zip");
+    // await downloadZip(fs, "repository.zip");
+    const pushResult = await pushRepo(fs, repoUrl, ghToken, true);
+    console.log(pushResult);
   };
 
   const [count, setCount] = useState(0);
