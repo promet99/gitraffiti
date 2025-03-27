@@ -13,7 +13,7 @@ export const GhButton = ({
     className={`w-[15px] h-[15px] text-[8px] text-white border-[1px] rounded-[2px] ct-${Math.min(
       count,
       4
-    )} tooltip tooltip-top`}
+    )} tooltip tooltip-top select-none`}
     data-tip={tooltipText}
     onMouseUp={(e: React.MouseEvent<HTMLButtonElement>) => {
       if (e.button === 0) {
@@ -23,6 +23,15 @@ export const GhButton = ({
       }
     }}
     onContextMenu={(e) => e.preventDefault()}
+    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+      if (e.buttons === 1) {
+        // Left mouse button
+        setCount(count + 1);
+      } else if (e.buttons === 2) {
+        // Right mouse button
+        setCount(count > 0 ? count - 1 : 0);
+      }
+    }}
   >
     {count}
   </button>
@@ -56,13 +65,12 @@ export const YearCommitBox = ({
               const isAfterLastDayOfYear =
                 i >= 52 && getYear(dateForBox) !== year;
 
-              if (isBeforeFirstDayOfYear || isAfterLastDayOfYear) {
-                return <GhPlaceholder key={`${i}-${j}`} />;
-              }
-              return (
+              return isBeforeFirstDayOfYear || isAfterLastDayOfYear ? (
+                <GhPlaceholder key={`${i}-${j}`} />
+              ) : (
                 <GhButton
                   key={`${i}-${j}`}
-                  count={count[dayOfYear]}
+                  count={count[dayOfYear - 1]}
                   setCount={(count) => setCount(dayOfYear, count)}
                   tooltipText={
                     format(dateForBox, "yyyy/MM/dd") + " " + dayOfYear

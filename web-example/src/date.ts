@@ -1,4 +1,4 @@
-import { addDays, format, getYear } from "date-fns";
+import { addDays, getDay, getDaysInYear, setDayOfYear } from "date-fns";
 import { PromiseFsClient } from "isomorphic-git";
 import { commit, formatDateToTimestamp } from "./util";
 
@@ -20,30 +20,56 @@ export const makeDate = (
   return currentDate;
 };
 
-export const makeYearArray = (y: number) => {
-  const yearArray: [string, number][] = [];
-  const startDate = new Date(y, 0, 1);
-  let currentDate = startDate;
-  while (getYear(currentDate) == y) {
-    const formattedDate = format(currentDate, "yyyy/MM/dd") + " 12:00:00";
-    yearArray.push([formattedDate, 0]);
-    currentDate = addDays(currentDate, 1);
-  }
-  return yearArray;
+export type CommitArray = {
+  year: number;
+  values: number[];
+};
+
+export const createCommitArray = (year: number): CommitArray => {
+  const days = getDaysInYear(new Date(year, 0, 1));
+  return {
+    year,
+    values: Array(days).fill(0),
+  };
 };
 
 export const commitFromYearArray = async (
   fs: PromiseFsClient,
-  yearArray: [string, number][],
+  yearArray: CommitArray,
   commitOptions: { name: string; email: string; message: string }
 ) => {
-  for (const [dateString, count] of yearArray) {
-    const currentDate = new Date(dateString);
-    for (let i = 0; i < count; i++) {
+  for (let i = 0; i < yearArray.values.length; i++) {
+    const count = yearArray.values[i];
+    const currentDate = setDayOfYear(new Date(yearArray.year, 0, 1), i + 1);
+    for (let j = 0; j < count; j++) {
       await commit(fs, {
         ...commitOptions,
         timestamp: formatDateToTimestamp(currentDate),
       });
     }
   }
+};
+
+export const moveCommitArray = (
+  commitArray: CommitArray,
+  direction: "left" | "right" | "up" | "down",
+  amount: number
+): CommitArray => {
+  const newCommitArray = createCommitArray(commitArray.year);
+  const fd = new Date(commitArray.year, 0, 1);
+  newCommitArray.values = commitArray.values.map((_, index) => {
+    const day = getDay(addDays(fd, index));
+    if (direction === "left") {
+      return commitArray.values[index + 7 * amount] || 0;
+    } else if (direction === "right") {
+      return commitArray.values[index - 7 * amount] || 0;
+    } else if (direction === "up") {
+      return day === 6 ? 0 : commitArray.values[index + 1] || 0;
+    } else if (direction === "down") {
+      return day === 0 ? 0 : commitArray.values[index - 1] || 0;
+    }
+    return 0;
+  });
+
+  return newCommitArray;
 };
