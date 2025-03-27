@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { downloadZip, initRepo, pushRepo } from "./util";
-import { GhButton } from "./components/ghbutton";
+import { GhButton, GhPlaceholder, YearCommitBox } from "./components/ghbutton";
 import { commitFromYearArray, makeYearArray } from "./date";
+import { format, getDay, getYear, setDayOfYear } from "date-fns";
 
-const ghToken = "";
-const repoUrl = "";
-const email = "";
+const ghToken = import.meta.env.VITE_GH_TOKEN;
+const repoUrl = import.meta.env.VITE_REPO_URL;
+const email = import.meta.env.VITE_EMAIL;
 
 function App() {
   const onClick = async () => {
@@ -17,7 +18,7 @@ function App() {
     await commitFromYearArray(fs, yearArray, {
       name: "gitraffiti",
       email: email,
-      message: "gitraffiti",
+      message: ".",
     });
 
     // await downloadZip(fs, "repository.zip");
@@ -25,7 +26,8 @@ function App() {
     console.log(pushResult);
   };
 
-  const [count, setCount] = useState(0);
+  const year = 2011;
+  const [count, setCount] = useState<number[]>(Array(366).fill(0));
 
   return (
     <>
@@ -35,19 +37,13 @@ function App() {
         </button>
 
         <div>
-          <div className="grid grid-cols-52 gap-[5px] w-fit">
-            {Array(52)
-              .fill(0)
-              .map((_, i) => (
-                <div key={i} className="grid grid-rows-7 gap-[5px]">
-                  {Array(7)
-                    .fill(0)
-                    .map((_, j) => (
-                      <GhButton key={j} count={count} setCount={setCount} />
-                    ))}
-                </div>
-              ))}
-          </div>
+          <YearCommitBox
+            year={year}
+            count={count}
+            setCount={(idx, count) => {
+              setCount((p) => p.map((c, i) => (i === idx ? count : c)));
+            }}
+          />
         </div>
       </div>
     </>
