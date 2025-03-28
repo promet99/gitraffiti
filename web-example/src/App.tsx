@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { downloadZip, initRepo, pushRepo } from "./util";
 import { YearCommitBox } from "./components/ghbutton";
 import {
@@ -8,33 +8,60 @@ import {
   moveCommitArray,
 } from "./date";
 
-const ghToken = import.meta.env.VITE_GH_TOKEN;
-const repoUrl = import.meta.env.VITE_REPO_URL;
-const email = import.meta.env.VITE_EMAIL;
-
 function App() {
-  const onClick = async () => {
-    const fs = await initRepo();
+  const [email, setEmail] = useState(
+    () => localStorage.getItem("gh_email") || ""
+  );
+  const [repoUrl, setRepoUrl] = useState(
+    () => localStorage.getItem("gh_repo_url") || ""
+  );
+  const [ghToken, setGhToken] = useState(
+    () => localStorage.getItem("gh_token") || ""
+  );
 
-    const yearArray = createCommitArray(2014);
-    // TODO: add values to yearArray here
+  // const [fs, setFs] = useState<FS>();
 
-    await commitFromYearArray(fs, yearArray, {
+  const [commitArray, setCommitArray] = useState<CommitArray>(() => {
+    const commitArray = localStorage.getItem("commitArray");
+    if (commitArray) {
+      return JSON.parse(commitArray);
+    }
+    return createCommitArray(new Date().getFullYear());
+  });
+  useEffect(() => {
+    // save to localStorage
+    localStorage.setItem("commitArray", JSON.stringify(commitArray));
+  }, [commitArray]);
+
+  const initAndCommit = async () => {
+    const newFs = await initRepo();
+
+    await commitFromYearArray(newFs, commitArray, {
       name: "gitraffiti",
       email: email,
       message: ".",
     });
 
-    // await downloadZip(fs, "repository.zip");
-    const pushResult = await pushRepo(fs, repoUrl, ghToken, true);
-    console.log(pushResult);
+    // setFs(newFs);
+    return newFs;
+  };
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Wrapper functions to handle both state and localStorage
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    localStorage.setItem("gh_email", value);
   };
 
-  const [year, setYear] = useState(2020);
-  const [commitArray, setCommitArray] = useState<CommitArray>(
-    createCommitArray(year)
-  );
-  const [isEditing, setIsEditing] = useState(false);
+  const handleRepoUrlChange = (value: string) => {
+    setRepoUrl(value);
+    localStorage.setItem("gh_repo_url", value);
+  };
+
+  const handleGhTokenChange = (value: string) => {
+    setGhToken(value);
+    localStorage.setItem("gh_token", value);
+  };
 
   return (
     <div className="m-4">
@@ -53,13 +80,15 @@ function App() {
                   1
                 </div>
               </div>
-              <div className="timeline-end timeline-box">
-                Copy Paste your GitHub Commit Email:
+              <div className="timeline-end timeline-box ml-3">
+                Input your GitHub Commit Email:
                 <div className="flex flex-row gap-2">
                   <input
                     type="text"
                     className="input input-sm w-[300px]"
                     placeholder="XXXX+GITHUB_ID@users.noreply.github.com"
+                    value={email}
+                    onChange={(e) => handleEmailChange(e.target.value)}
                   />
                 </div>
                 <br />
@@ -78,15 +107,20 @@ function App() {
                   2
                 </div>
               </div>
-              <div className="timeline-end timeline-box">
+              <div className="timeline-end timeline-box ml-3">
                 Choose Which Years to Draw On
                 <br />
                 <input
                   type="number"
                   placeholder="Choose Year"
                   className="input input-xs w-[150px]"
-                  value={year}
-                  onChange={(e) => setYear(Number(e.target.value))}
+                  value={commitArray.year}
+                  onChange={(e) =>
+                    setCommitArray((p) => ({
+                      ...p,
+                      year: Number(e.target.value),
+                    }))
+                  }
                   onBlur={() => setIsEditing(false)}
                   autoFocus
                 />
@@ -101,7 +135,7 @@ function App() {
                   3
                 </div>
               </div>
-              <div className="timeline-end timeline-box">
+              <div className="timeline-end timeline-box ml-3">
                 Draw on Graph! <br /> You can drag. Right click will erase
                 commit
                 <br />
@@ -117,13 +151,20 @@ function App() {
                           type="number"
                           placeholder="Choose Year"
                           className="input stat-value p-0 w-[150px]"
-                          value={year}
-                          onChange={(e) => setYear(Number(e.target.value))}
+                          value={commitArray.year}
+                          onChange={(e) =>
+                            setCommitArray((p) => ({
+                              ...p,
+                              year: Number(e.target.value),
+                            }))
+                          }
                           onBlur={() => setIsEditing(false)}
                           autoFocus
                         />
                       ) : (
-                        <div className="stat-value cursor-pointer">{year}</div>
+                        <div className="stat-value cursor-pointer">
+                          {commitArray.year}
+                        </div>
                       )}
                       <div className="stat-desc">Click to Change Year!</div>
                     </div>
@@ -131,7 +172,7 @@ function App() {
                 </div>
                 <div className="p-2">
                   <YearCommitBox
-                    year={year}
+                    year={commitArray.year}
                     count={commitArray.values}
                     setCount={(idx, count) => {
                       setCommitArray((p) => ({
@@ -145,7 +186,7 @@ function App() {
                   <button
                     className="btn btn-primary btn-sm m-2"
                     onClick={() => {
-                      setCommitArray(createCommitArray(year));
+                      setCommitArray(createCommitArray(commitArray.year));
                     }}
                   >
                     Clear
@@ -196,14 +237,17 @@ function App() {
                   4
                 </div>
               </div>
-              <div className="timeline-end timeline-box">
+              <div className="timeline-end timeline-box ml-3">
                 Download, or Push to Github right away!
                 <br />
                 <div className="">
                   <div className="m-4">
                     <button
                       className="btn btn-primary btn-success"
-                      onClick={onClick}
+                      onClick={async () => {
+                        const newFs = await initAndCommit();
+                        downloadZip(newFs, "repository.zip");
+                      }}
                     >
                       Download git file
                     </button>
@@ -211,7 +255,20 @@ function App() {
                   <div className="flex flex-row gap-2 m-4">
                     <button
                       className="btn btn-primary btn-success"
-                      onClick={onClick}
+                      onClick={async () => {
+                        const newFs = await initAndCommit();
+                        console.log({ repoUrl, ghToken });
+                        const pushResult = await pushRepo(
+                          newFs,
+                          repoUrl,
+                          ghToken,
+                          true
+                        );
+                        console.log(pushResult);
+                        console.log(pushResult.ok === true);
+                        // TODO
+                        window.alert("Pushed to GitHub!");
+                      }}
                     >
                       Push to GitHub
                     </button>
@@ -222,6 +279,8 @@ function App() {
                         type="text"
                         className="input input-sm"
                         placeholder="github_pat_XXXXX"
+                        value={ghToken}
+                        onChange={(e) => handleGhTokenChange(e.target.value)}
                       />
                     </fieldset>
                     <fieldset className="fieldset">
@@ -232,6 +291,8 @@ function App() {
                         type="text"
                         className="input input-sm w-[250px]"
                         placeholder="https://github.com/username/repo"
+                        value={repoUrl}
+                        onChange={(e) => handleRepoUrlChange(e.target.value)}
                       />
                     </fieldset>
                   </div>
