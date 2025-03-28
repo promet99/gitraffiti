@@ -50,7 +50,16 @@ export const YearCommitBox = ({
   count: number[];
   setCount: (idx: number, count: number) => void;
 }) => (
-  <div className="grid grid-cols-54 gap-[5px] w-fit">
+  <div className="grid grid-cols-55 gap-[5px] w-fit">
+    {/* <div className="grid grid-rows-7 gap-[5px]">
+      <GhPlaceholder />
+      <GhPlaceholder />
+      <GhPlaceholder />
+      <GhPlaceholder />
+      <GhPlaceholder />
+      <GhPlaceholder />
+      <GhPlaceholder />
+    </div> */}
     {Array(54)
       .fill(0)
       .map((_, i) => (
@@ -71,7 +80,7 @@ export const YearCommitBox = ({
                 <GhButton
                   key={`${i}-${j}`}
                   count={count[dayOfYear - 1]}
-                  setCount={(count) => setCount(dayOfYear, count)}
+                  setCount={(v) => setCount(dayOfYear - 1, v)}
                   tooltipText={
                     format(dateForBox, "yyyy/MM/dd") + " " + dayOfYear
                   }
