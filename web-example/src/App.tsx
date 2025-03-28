@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { downloadZip, initRepo, pushRepo } from "./util";
-import { YearCommitBox } from "./components/ghbutton";
+import { YearCommitBox } from "./components/ghButton";
 import {
   CommitArray,
   commitFromYearArray,
