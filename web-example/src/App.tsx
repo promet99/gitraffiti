@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { downloadZip, initRepo, pushRepo } from "./util";
+import { defaultValue, downloadZip, initRepo, pushRepo } from "./util";
 import { YearCommitBox } from "./components/ghButton";
 import {
   CommitArray,
@@ -26,7 +26,7 @@ function App() {
     if (commitArray) {
       return JSON.parse(commitArray);
     }
-    return createCommitArray(new Date().getFullYear());
+    return defaultValue;
   });
   useEffect(() => {
     // save to localStorage
@@ -66,7 +66,18 @@ function App() {
   return (
     <div className="m-4">
       <div>
-        <div className="text-3xl font-black">Git-Raffiti</div>
+        <div>
+          <a
+            href="https://github.com/promet99/gitraffiti"
+            className="text-3xl font-black flex items-center gap-4"
+          >
+            Git-Raffiti
+            <img
+              alt="GitHub Repo stars"
+              src="https://img.shields.io/github/stars/promet99/gitraffiti"
+            />
+          </a>
+        </div>
         <div>
           Draw stuff on GitHub Contribution Graph!
           <br />
@@ -302,6 +313,32 @@ function App() {
                       />
                     </fieldset>
                   </div>
+                </div>
+              </div>
+              <hr />
+            </li>
+            <li>
+              <hr />
+              <div className="timeline-middle">
+                <div className="rounded-full bg-white w-5 h-5 flex items-center justify-center text-black">
+                  5
+                </div>
+              </div>
+              <div className="timeline-end timeline-box ml-3">
+                <div className="text-lg font-bold">
+                  5. Share, Contribute, Press Star, or read Docs
+                </div>
+                <br />
+                <div>
+                  <a
+                    href="https://github.com/promet99/gitraffiti"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <button className="btn btn-info">
+                      Show me GitHub Repo
+                    </button>
+                  </a>
                 </div>
               </div>
             </li>

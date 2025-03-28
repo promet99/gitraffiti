@@ -10,10 +10,9 @@ export const GhButton = ({
   tooltipText: string;
 }) => (
   <button
-    className={`w-[15px] h-[15px] text-[8px] text-white border-[1px] rounded-[2px] ct-${Math.min(
-      count,
-      4
-    )} tooltip tooltip-top select-none`}
+    className={`w-[15px] h-[15px] text-[8px] text-white border-[1px] rounded-[2px] ct-${
+      count > 0 ? 3 : 0
+    } tooltip tooltip-top select-none`}
     data-tip={tooltipText}
     onMouseUp={(e: React.MouseEvent<HTMLButtonElement>) => {
       if (e.button === 0) {
