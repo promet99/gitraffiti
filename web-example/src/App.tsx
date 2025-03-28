@@ -68,9 +68,9 @@ function App() {
       <div>
         <div className="text-3xl font-black">Git-Raffiti</div>
         <div>
-          Draw your own graffiti on GitHub!
+          Draw stuff on GitHub Contribution Graph!
           <br />
-          Make your contribution graph green
+          Make yourself look like a pro!
         </div>
         <div className="m-4 flex">
           <ul className="timeline timeline-vertical timeline-compact">
@@ -81,7 +81,9 @@ function App() {
                 </div>
               </div>
               <div className="timeline-end timeline-box ml-3">
-                Input your GitHub Commit Email:
+                <div className="text-lg font-bold">
+                  1. Input your GitHub Commit Email:
+                </div>
                 <div className="flex flex-row gap-2">
                   <input
                     type="text"
@@ -108,7 +110,9 @@ function App() {
                 </div>
               </div>
               <div className="timeline-end timeline-box ml-3">
-                Choose Which Years to Draw On
+                <div className="text-lg font-bold">
+                  2. Choose Which Years to Draw On
+                </div>
                 <br />
                 <input
                   type="number"
@@ -136,8 +140,8 @@ function App() {
                 </div>
               </div>
               <div className="timeline-end timeline-box ml-3">
-                Draw on Graph! <br /> You can drag. Right click will erase
-                commit
+                <div className="text-lg font-bold">3. Draw on Graph!</div>
+                <br /> You can drag. Right click will erase commit
                 <br />
                 <div>
                   <div className="stats shadow">
@@ -238,7 +242,9 @@ function App() {
                 </div>
               </div>
               <div className="timeline-end timeline-box ml-3">
-                Download, or Push to Github right away!
+                <div className="text-lg font-bold">
+                  4. Download, or Push to Github right away!
+                </div>
                 <br />
                 <div className="">
                   <div className="m-4">
